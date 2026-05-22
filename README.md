@@ -1,6 +1,6 @@
 # Chinese Dictionary English Glossary Frequency Sorter
 
-A .NET console tool that builds a SQLite dictionary from [CC-CEDICT](https://www.mdbg.net/chinese/export/cedict/) for use in an Android keyboard app. English definitions are merged, sorted (everyday meanings before surname / variant / classifier notes), and written to a single database file.
+A .NET console tool that builds a SQLite dictionary from [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cedict) for use in an Android app. English definitions are merged, sorted (everyday meanings before surname / variant / classifier notes), and written to a single database file.
 
 ## What this tool does
 
