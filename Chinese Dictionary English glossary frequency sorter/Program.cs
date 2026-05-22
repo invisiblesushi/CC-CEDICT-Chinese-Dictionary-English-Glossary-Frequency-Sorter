@@ -28,7 +28,8 @@ if (parsedEntries.Count == 0)
     return 1;
 }
 
-var entries = CedictEntryMerger.MergeDuplicateWords(parsedEntries);
+var merged = CedictEntryMerger.MergeDuplicateWords(parsedEntries);
+var entries = SimplifiedCanonicalAssigner.Assign(merged);
 SqliteWriter.WriteEntries(sqlitePath, entries);
 
 Console.WriteLine($"Parsed {parsedEntries.Count} CC-CEDICT lines.");

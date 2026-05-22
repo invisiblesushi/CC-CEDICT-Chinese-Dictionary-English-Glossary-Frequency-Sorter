@@ -35,7 +35,7 @@ public static partial class CedictParser
         {
             Traditional = match.Groups[1].Value,
             Simplified = match.Groups[2].Value,
-            Pinyin = match.Groups[3].Value,
+            Pinyin = PinyinToneConverter.ToToneMarks(match.Groups[3].Value),
             Definitions = definitions
         };
     }

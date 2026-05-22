@@ -4,6 +4,10 @@ namespace Chinese_Dictionary_English_glossary_frequency_sorter.Parsing;
 
 public static class CedictEntryMerger
 {
+    /// <summary>
+    /// Merges CC-CEDICT lines only when both simplified and traditional match.
+    /// Same simplified with different traditional (e.g. 玩/玩 vs 玩/翫) stay separate entries.
+    /// </summary>
     public static List<CedictEntry> MergeDuplicateWords(IEnumerable<CedictEntry> entries)
     {
         return entries

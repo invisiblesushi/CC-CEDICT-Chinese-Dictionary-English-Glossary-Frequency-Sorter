@@ -8,12 +8,8 @@ obj/
 *.user
 *.DotSettings.user
 
-# Input data (users download themselves)
-data/input/*.u8
-data/input/**/*.u8
-data/input/**/*.json
-data/input/**/*.csv
+# Input data (users download CC-CEDICT themselves)
+data/input/
 
-# Generated output
-data/output/*.db
-data/output/**/*.db
+# Generated output (SQLite and other build artifacts)
+data/output/

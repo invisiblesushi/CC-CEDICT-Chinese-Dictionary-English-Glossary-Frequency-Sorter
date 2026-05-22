@@ -4,10 +4,11 @@ A .NET console tool that builds a SQLite dictionary from [CC-CEDICT](https://www
 
 ## What this tool does
 
-1. Parse CC-CEDICT lines  
-2. Merge rows with the same simplified + traditional  
-3. Sort English glosses (rule-based: core meanings first; surname, `variant of`, `CL:`, etc. last)  
-4. Write SQLite with indexes  
+1. Parse CC-CEDICT lines (numbered pinyin → diacritic tone marks)  
+2. Merge CC-CEDICT lines only when **both** simplified and traditional match  
+3. **Canonical simplified:** if multiple rows share the same simplified (e.g. 玩/玩 and 玩/翫), keep `simplified` only on the best-scoring row; others get `simplified = ""` (empty string) so simplified-only keyboard lookup hits one headword  
+4. Sort English glosses by heuristic score (common words and short glosses first; metadata/classifier/surname glosses last)  
+5. Write SQLite with indexes  
 
 ## Requirements
 
@@ -45,12 +46,55 @@ Table `entries`:
 
 | Column | Description |
 |--------|-------------|
-| `simplified` | Simplified Chinese (lookup key) |
-| `traditional` | Traditional Chinese (lookup key) |
-| `pinyin` | Pinyin (multiple readings joined with `\|`) |
-| `definitionsInEnglish` | Glosses joined with `\|`, sorted by built-in rules |
+| `simplified` | Simplified Chinese lookup key; empty string when this row is a secondary traditional form for the same simplified (see canonical simplified step) |
+| `traditional` | Traditional Chinese (lookup key; use when `simplified` is empty) |
+| `pinyin` | Tone-marked pinyin (converted from CC-CEDICT numbered form, e.g. `ni3 hao3` → `nǐ hǎo`; multiple readings joined with `\|`) |
+| `definitionsInEnglish` | Glosses joined with `\|` (any `;` in source text is normalized to `\|`), sorted by score (highest first) |
 
-Indexes: `idx_entries_simplified`, `idx_entries_traditional`.
+Indexes: unique `(simplified, traditional)` when `simplified` is not empty; lookups on `simplified` and `traditional`. Multiple secondary rows may use `simplified = ''` with the same `traditional` (they are excluded from the unique index).
+
+**玩 example:** CC-CEDICT has 玩/翫 (variant note) and 玩/玩 (to play, toy, …). Definitions stay on two rows, but after canonical simplified assignment:
+
+| simplified | traditional | Role |
+|------------|-------------|------|
+| 玩 | 玩 | Primary row (higher gloss scores) |
+| *(empty)* | 翫 | Secondary form; lookup by `traditional` only |
+
+Keyboard query `WHERE simplified = '玩'` returns one primary entry. Query `WHERE traditional = '翫'` still finds the variant row.
+
+## Gloss ranking (heuristic scores)
+
+Each gloss gets a score in `[0, 1]` from `GlossScorer` (see [`GlossScorer.cs`](Chinese Dictionary English glossary frequency sorter/Sorting/GlossScorer.cs)):
+
+**Formula:** `Base (0.50) + simplicity + position + POS bonus − penalties`, then clamped.
+
+| Component | Effect |
+|-----------|--------|
+| Simplicity | 1 word +0.18, 2 words +0.10 |
+| Position | 1st +0.10, 2nd +0.06, 3rd +0.03 |
+| POS | starts with `to ` +0.08; single-word noun +0.06 |
+| Metadata | `surname`, `CL:`, `classifier`, `variant of`, `archaic`, etc. −0.25 to −0.80 |
+| Complexity | long gloss, semicolons, parentheses, many commas |
+
+Glosses are sorted **descending by score** (stable tie-break: original CC-CEDICT order). Goal: best learner-facing primary gloss first, not linguistic perfection.
+
+| Score | Typical use |
+|-------|-------------|
+| 0.90+ | excellent primary gloss |
+| 0.75+ | strong |
+| 0.60+ | acceptable |
+| &lt;0.40 | likely metadata/noise |
+
+`RankedGloss` (`Gloss`, `Score`, `SourceIndex`) is available via `DefinitionSorter.Rank()` for debugging or tooling.
+
+## Character gloss overrides (optional)
+
+When heuristics are wrong for a headword, add entries to [`CharacterGlossOrderRules.cs`](Chinese Dictionary English glossary frequency sorter/Sorting/CharacterRules/CharacterGlossOrderRules.cs). These **pin** matching glosses first; the rest are score-sorted.
+
+- `Simplified` (required), optional `Traditional` (`null` = any traditional form)
+- `PriorityGlosses` — case-insensitive exact or `"{key} "` prefix match
+
+Semicolon normalization (`;` → `|`) runs when glosses are joined for SQLite.
 
 ## License
 

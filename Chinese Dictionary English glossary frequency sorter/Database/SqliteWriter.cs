@@ -43,7 +43,7 @@ public static class SqliteWriter
             insertCommand.Parameters["$simplified"].Value = entry.Simplified;
             insertCommand.Parameters["$traditional"].Value = entry.Traditional;
             insertCommand.Parameters["$pinyin"].Value = entry.Pinyin;
-            insertCommand.Parameters["$definitionsInEnglish"].Value = DefinitionSorter.JoinSorted(entry.Definitions);
+            insertCommand.Parameters["$definitionsInEnglish"].Value = DefinitionSorter.JoinSorted(entry);
             insertCommand.ExecuteNonQuery();
         }
 
