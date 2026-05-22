@@ -1,0 +1,19 @@
+# Build
+bin/
+obj/
+
+# IDE
+.idea/
+.vs/
+*.user
+*.DotSettings.user
+
+# Input data (users download themselves)
+data/input/*.u8
+data/input/**/*.u8
+data/input/**/*.json
+data/input/**/*.csv
+
+# Generated output
+data/output/*.db
+data/output/**/*.db

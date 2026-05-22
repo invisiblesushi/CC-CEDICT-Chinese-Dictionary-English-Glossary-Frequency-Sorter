@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chinese Dictionary English glossary frequency sorter", "Chinese Dictionary English glossary frequency sorter\Chinese Dictionary English glossary frequency sorter.csproj", "{A37CB232-D875-4CF7-AE76-C80C424FA507}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A37CB232-D875-4CF7-AE76-C80C424FA507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A37CB232-D875-4CF7-AE76-C80C424FA507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A37CB232-D875-4CF7-AE76-C80C424FA507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A37CB232-D875-4CF7-AE76-C80C424FA507}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
